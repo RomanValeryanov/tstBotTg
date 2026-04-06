@@ -2,7 +2,7 @@ import telebot
 import requests
 bot = telebot.TeleBot('8761173652:AAG8js1JUu9UgP3E8tm163yIr-pJN2C6-b0')
 known_users = set()
-@bot.message_handler(commands=['gg'])
+@bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
     bot.register_next_step_handler(message, get_operation)
@@ -11,7 +11,9 @@ def get_operation(message):
     operation = message.text.strip()
     op = operation.lower()
     if op == 'рома':
-        bot.send_message(message.chat.id, 'Введите первое число:')
+        bot.send_message(message.chat.id, 'Завозной')
+    elif op == 'ян':
+        bot.send_message(message.chat.id, 'васап хоуми')
     elif op in ('таня', 'татьяна'):
         bot.send_message(message.chat.id, 'Так это же любимая жиночка')
     elif op == 'артем':
