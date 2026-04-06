@@ -84,5 +84,5 @@ def calculate(a, b, op):
 def greet_new_user(message):
     if message.chat.id not in known_users:
         known_users.add(message.chat.id)
-        bot.send_message(message.chat.id, 'Привет! Я заместитель Романа Викторовича. Введи какое нибудь имя и я подскажу кем он ему приходится. Напиши /gg чтобы начать.')
+        bot.send_message(message.chat.id, 'Привет! Я заместитель Романа Викторовича. Введи какое нибудь имя и я подскажу кем он ему приходится. Напиши /start чтобы начать.')
 bot.polling(none_stop=True)
