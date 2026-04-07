@@ -8,7 +8,7 @@ def start(message):
     
     usd_rub, eth_usd = get_rates()
     text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-     chat_id = message.chat.id
+    chat_id = message.chat.id
     if chat_id in pinned_messages:
         try:
             bot.edit_message_text(text, chat_id, pinned_messages[chat_id])
