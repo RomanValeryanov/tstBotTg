@@ -109,10 +109,28 @@ def get_rates():
 
 def update_rates_if_needed(message):
     now = time.time()
-    sent = bot.send_message(message.chat.id, 'проходит тут апдейт рейтс1')
+  
     last = last_rates_update.get(message.chat.id, 0)
-    sent = bot.send_message(message.chat.id, 'проходит тут апдейт рейтс2')
    
    
+    if now - last < RATES_INTERVAL:
+        return
+    try:
+        usd_rub, eth_usd = get_rates()
+        text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
+        if chat_id in pinned_messages:
+            try:
+                bot.edit_message_text(text, message.chat.id, pinned_messages[message.chat.id])
+            except:
+                sent = bot.send_message(message.chat.id, text)
+                bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+                pinned_messages[message.chat.id] = sent.message_id
+        else:
+            sent = bot.send_message(message.chat.id, text)
+            bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+            pinned_messages[message.chat.id] = sent.message_id
+        last_rates_update[message.chat.id] = now
+    except:
+        pass
    
 bot.polling(none_stop=True)
