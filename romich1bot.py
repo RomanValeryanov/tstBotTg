@@ -30,9 +30,9 @@ def start(message):
     #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
     bot.register_next_step_handler(message, get_operation)
 def get_operation(message):
-    if not message.text:
-        bot.register_next_step_handler(message, get_operation)
-        return
+    #if not message.text:
+    #    bot.register_next_step_handler(message, get_operation)
+    #    return
         
     chat_id = message.chat.id
     update_rates_if_needed(chat_id)
@@ -109,11 +109,13 @@ def get_rates():
 def update_rates_if_needed(chat_id):
     now = time.time()
     last = last_rates_update.get(chat_id, 0)
+    sent = bot.send_message(chat_id, 'проходит тут апдейт рейтс')
     if now - last < RATES_INTERVAL:
         return
     try:
         usd_rub, eth_usd = get_rates()
         text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
+        sent = bot.send_message(chat_id, text) ###############
         if chat_id in pinned_messages:
             try:
                 bot.edit_message_text(text, chat_id, pinned_messages[chat_id])
