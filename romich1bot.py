@@ -1,5 +1,6 @@
 import telebot
 import requests
+import time
 bot = telebot.TeleBot('8761173652:AAG8js1JUu9UgP3E8tm163yIr-pJN2C6-b0')
 known_users = set()
 pinned_messages = {}
