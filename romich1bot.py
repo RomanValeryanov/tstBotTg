@@ -118,7 +118,7 @@ def update_rates_if_needed(message):
     try:
         usd_rub, eth_usd = get_rates()
         text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-        if chat_id in pinned_messages:
+        if message.chat.id in pinned_messages:
             try:
                 bot.edit_message_text(text, message.chat.id, pinned_messages[message.chat.id])
             except:
