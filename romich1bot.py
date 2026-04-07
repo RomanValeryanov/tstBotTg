@@ -5,6 +5,12 @@ known_users = set()
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
+    
+    usd_rub, eth_usd = get_rates()
+    text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
+    sent = bot.send_message(message.chat.id, text)
+    bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+    
     bot.register_next_step_handler(message, get_operation)
 def get_operation(message):
     global operation
@@ -85,4 +91,20 @@ def greet_new_user(message):
     if message.chat.id not in known_users:
         known_users.add(message.chat.id)
         bot.send_message(message.chat.id, 'Привет! Я заместитель Романа Викторовича. Введи какое нибудь имя и я подскажу кем он ему приходится. Напиши /start чтобы начать.')
+        
+        
+        
+def get_rates():
+    try:
+        usd = requests.get('https://www.cbr-xml-daily.ru/daily_json.js', timeout=5).json()
+        usd_rub = round(usd['Valute']['USD']['Value'], 2)
+    except:
+        usd_rub = 'нет данных'
+    try:
+        eth = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd', timeout=5).json()
+        eth_usd = round(eth['ethereum']['usd'], 2)
+    except:
+        eth_usd = 'нет данных'
+    return usd_rub, eth_usd       
+        
 bot.polling(none_stop=True)
