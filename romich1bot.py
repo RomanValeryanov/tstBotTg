@@ -116,9 +116,11 @@ def update_rates_if_needed(message):
     if now - last < RATES_INTERVAL:
         return
     try:
+        bot.send_message(message.chat.id, 'прошел1')
         usd_rub, eth_usd = get_rates()
         text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         if message.chat.id in pinned_messages:
+            bot.send_message(message.chat.id, 'прошел2')
             try:
                 bot.edit_message_text(text, message.chat.id, pinned_messages[message.chat.id])
             except:
@@ -126,6 +128,7 @@ def update_rates_if_needed(message):
                 bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
                 pinned_messages[message.chat.id] = sent.message_id
         else:
+             bot.send_message(message.chat.id, 'прошел3')
             sent = bot.send_message(message.chat.id, text)
             bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
             pinned_messages[message.chat.id] = sent.message_id
