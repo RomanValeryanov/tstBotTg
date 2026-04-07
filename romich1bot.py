@@ -2,6 +2,9 @@ import telebot
 import requests
 bot = telebot.TeleBot('8761173652:AAG8js1JUu9UgP3E8tm163yIr-pJN2C6-b0')
 known_users = set()
+pinned_messages = {}
+last_rates_update = {}
+RATES_INTERVAL = 1 * 10  # обновлять курс 
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
@@ -30,6 +33,10 @@ def get_operation(message):
     if not message.text:
         bot.register_next_step_handler(message, get_operation)
         return
+        
+    chat_id = message.chat.id
+    update_rates_if_needed(chat_id)
+    
     global operation
     operation = message.text.strip()
     op = operation.lower()
@@ -74,35 +81,9 @@ def check_snils(message):
     else:
         bot.send_message(message.chat.id, 'Все четко, списала бабос')
     bot.register_next_step_handler(message, get_operation)
-def get_num1(message):
-    global num1
-    try:
-        num1 = float(message.text)
-        bot.send_message(message.chat.id, 'Введите второе число:')
-        bot.register_next_step_handler(message, get_num2)
-    except ValueError:
-        bot.send_message(message.chat.id, 'Ошибка! Введите число. /start для повторa')
-        bot.register_next_step_handler(message, get_num1)
-def get_num2(message):
-    global num2
-    try:
-        num2 = float(message.text)
-        result = calculate(num1, num2, operation)
-        bot.send_message(message.chat.id, f'Результат: {result}')
-        bot.send_message(message.chat.id, '/start для новой операции')
-    except ValueError:
-        bot.send_message(message.chat.id, 'Ошибка! Введите число. /start')
-    except Exception as e:
-        bot.send_message(message.chat.id, f'Ошибка: {e}. /start')
-def calculate(a, b, op):
-    if op == '+': return a + b
-    elif op == '-': return a - b
-    elif op == '*': return a * b
-    elif op == '/':
-        if b == 0: raise ValueError('Деление на ноль!')
-        return a / b
-    else:
-        raise ValueError('Неверная операция!')
+
+
+
 @bot.message_handler(func=lambda message: True)
 def greet_new_user(message):
     if message.chat.id not in known_users:
@@ -122,6 +103,30 @@ def get_rates():
         eth_usd = round(eth['ethereum']['usd'], 2)
     except:
         eth_usd = 'нет данных'
-    return usd_rub, eth_usd       
+    return usd_rub, eth_usd      
+
+
+def update_rates_if_needed(chat_id):
+    now = time.time()
+    last = last_rates_update.get(chat_id, 0)
+    if now - last < RATES_INTERVAL:
+        return
+    try:
+        usd_rub, eth_usd = get_rates()
+        text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
+        if chat_id in pinned_messages:
+            try:
+                bot.edit_message_text(text, chat_id, pinned_messages[chat_id])
+            except:
+                sent = bot.send_message(chat_id, text)
+                bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
+                pinned_messages[chat_id] = sent.message_id
+        else:
+            sent = bot.send_message(chat_id, text)
+            bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
+            pinned_messages[chat_id] = sent.message_id
+        last_rates_update[chat_id] = now
+    except:
+        pass    
         
 bot.polling(none_stop=True)
