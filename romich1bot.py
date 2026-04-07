@@ -8,11 +8,23 @@ def start(message):
     
     usd_rub, eth_usd = get_rates()
     text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-    sent = bot.send_message(message.chat.id, text)
-    bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
-    
+     chat_id = message.chat.id
+    if chat_id in pinned_messages:
+        try:
+            bot.edit_message_text(text, chat_id, pinned_messages[chat_id])
+        except:
+            sent = bot.send_message(chat_id, text)
+            bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
+            pinned_messages[chat_id] = sent.message_id
+    else:
+        sent = bot.send_message(chat_id, text)
+        bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
+        pinned_messages[chat_id] = sent.message_id
     bot.register_next_step_handler(message, get_operation)
 def get_operation(message):
+    if not message.text:
+        bot.register_next_step_handler(message, get_operation)
+        return
     global operation
     operation = message.text.strip()
     op = operation.lower()
