@@ -128,7 +128,7 @@ def update_rates_if_needed(message):
                 bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
                 pinned_messages[message.chat.id] = sent.message_id
         else:
-             bot.send_message(message.chat.id, 'прошел3')
+            bot.send_message(message.chat.id, 'прошел3')
             sent = bot.send_message(message.chat.id, text)
             bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
             pinned_messages[message.chat.id] = sent.message_id
