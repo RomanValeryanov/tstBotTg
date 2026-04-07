@@ -34,8 +34,8 @@ def get_operation(message):
     #    bot.register_next_step_handler(message, get_operation)
     #    return
         
-    chat_id = message.chat.id
-    update_rates_if_needed(chat_id)
+    #chat_id = message.chat.id
+    #update_rates_if_needed(chat_id)
     
     global operation
     operation = message.text.strip()
