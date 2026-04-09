@@ -101,7 +101,7 @@ def rates_sender(message):
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         try:
             #bot.send_message(chat_id, text)
-            bot.unpin_all_chat_message(message.chat.id)
+            
             sent = bot.send_message(message.chat.id, text)
             bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
         except:
@@ -110,6 +110,7 @@ def rates_sender(message):
         #sent = bot.send_message(message.chat.id, text)
         #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
         time.sleep(30)  # ждем 30 сек
+        bot.unpin_all_chat_message(message.chat.id)
 
 # Запуск потока рассылки и polling
 
