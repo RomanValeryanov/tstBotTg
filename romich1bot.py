@@ -99,14 +99,16 @@ def rates_sender(message):
         usd_rub, eth_usd = get_rates()
     
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-        for chat_id in list(active_chats):  # копия списка для безопасности
-            try:
-                bot.send_message(chat_id, text)
-            except:
-                pass  # если чат недоступен, пропускаем
-        bot.unpin_all_chat_message(message.chat.id)
-        sent = bot.send_message(message.chat.id, text)
-        bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+        try:
+            #bot.send_message(chat_id, text)
+            bot.unpin_all_chat_message(message.chat.id)
+            sent = bot.send_message(message.chat.id, text)
+            bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+        except:
+            bot.send_message(message.chat.id, 'fail')
+        #bot.unpin_all_chat_message(message.chat.id)
+        #sent = bot.send_message(message.chat.id, text)
+        #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
         time.sleep(30)  # ждем 30 сек
 
 # Запуск потока рассылки и polling
