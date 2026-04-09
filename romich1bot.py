@@ -20,8 +20,8 @@ def start(message):
     bot.register_next_step_handler(message, get_operation)
     
     #chat_id = message.chat.id
-    sender_thread = threading.Thread(target=rates_sender(message), daemon=True)
-    sender_thread.start()
+    #sender_thread = threading.Thread(target=rates_sender(message), daemon=True)
+    #sender_thread.start()
 def get_operation(message):
    
    
