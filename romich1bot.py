@@ -93,6 +93,7 @@ def get_rates():
 def rates_sender():
     while True:
         usd_rub, eth_usd = get_rates()
+        bot.send_message(chat_id, 'поток')
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         for chat_id in list(active_chats):  # копия списка для безопасности
             try:
