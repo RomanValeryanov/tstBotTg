@@ -1,8 +1,10 @@
 import telebot
 import requests
 import time
+import threading
 bot = telebot.TeleBot('8761173652:AAG8js1JUu9UgP3E8tm163yIr-pJN2C6-b0')
 known_users = set()
+active_chats = set()  
 pinned_messages = {}
 last_rates_update = {}
 RATES_INTERVAL = 1 * 10  # обновлять курс 
@@ -11,32 +13,14 @@ def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
     
     usd_rub, eth_usd = get_rates()
-    text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-    
-    #chat_id = message.chat.id
-    #if chat_id in pinned_messages:
-    #    try:
-    #        bot.edit_message_text(text, chat_id, pinned_messages[chat_id])
-    #    except:
-    #        sent = bot.send_message(chat_id, text)
-    #        bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
-    #        pinned_messages[chat_id] = sent.message_id
-    #else:
-    #    sent = bot.send_message(chat_id, text)
-    #    bot.pin_chat_message(chat_id, sent.message_id, disable_notification=True)
-    #    pinned_messages[chat_id] = sent.message_id
-    #bot.register_next_step_handler(message, get_operation)
+    text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'    
     
     sent = bot.send_message(message.chat.id, text)
-    #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
+  
     bot.register_next_step_handler(message, get_operation)
 def get_operation(message):
-    #if not message.text:
-    #    bot.register_next_step_handler(message, get_operation)
-    #    return
-        
-    #chat_id = message.chat.id
-    update_rates_if_needed(message)
+   
+   
     
     global operation
     operation = message.text.strip()
@@ -106,34 +90,19 @@ def get_rates():
         eth_usd = 'нет данных'
     return usd_rub, eth_usd      
 
-
-def update_rates_if_needed(message):
-    now = time.time()
-  
-    last = last_rates_update.get(message.chat.id, 0)
-   
-   
-    if now - last < RATES_INTERVAL:
-        return
-    try:
-        bot.send_message(message.chat.id, 'прошел1')
+def rates_sender():
+    while True:
         usd_rub, eth_usd = get_rates()
-        text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
-        if message.chat.id in pinned_messages:
-            bot.send_message(message.chat.id, 'прошел2')
+        text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
+        for chat_id in list(active_chats):  # копия списка для безопасности
             try:
-                bot.edit_message_text(text, message.chat.id, pinned_messages[message.chat.id])
+                bot.send_message(chat_id, text)
             except:
-                sent = bot.send_message(message.chat.id, text)
-                bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
-                pinned_messages[message.chat.id] = sent.message_id
-        else:
-            bot.send_message(message.chat.id, 'прошел3')
-            sent = bot.send_message(message.chat.id, text)
-            bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
-            pinned_messages[message.chat.id] = sent.message_id
-        last_rates_update[message.chat.id] = now
-    except:
-        pass
-   
+                pass  # если чат недоступен, пропускаем
+        time.sleep(30)  # ждем 30 сек
+
+# Запуск потока рассылки и polling
+sender_thread = threading.Thread(target=rates_sender, daemon=True)
+sender_thread.start()
+
 bot.polling(none_stop=True)
