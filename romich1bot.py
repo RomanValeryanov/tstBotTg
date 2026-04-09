@@ -109,8 +109,13 @@ def rates_sender(message):
         #bot.unpin_all_chat_message(message.chat.id)
         #sent = bot.send_message(message.chat.id, text)
         #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
-        time.sleep(30)  # ждем 30 сек
-        bot.unpin_all_chat_message(message.chat.id)
+        time.sleep(10)  # ждем 30 сек
+        try:
+            bot.unpin_all_chat_messages(message.chat.id)
+           
+        except Exception as e2:
+            sent = bot.send_message(message.chat.id, 'не открепить че то')
+        #bot.unpin_all_chat_message(message.chat.id)
 
 # Запуск потока рассылки и polling
 
