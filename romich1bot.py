@@ -104,7 +104,9 @@ def rates_sender(message):
                 bot.send_message(chat_id, text)
             except:
                 pass  # если чат недоступен, пропускаем
-        bot.send_message(message.chat.id, text)
+        bot.unpin_all_chat_message(message.chat.id)
+        sent = bot.send_message(message.chat.id, text)
+        bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
         time.sleep(30)  # ждем 30 сек
 
 # Запуск потока рассылки и polling
