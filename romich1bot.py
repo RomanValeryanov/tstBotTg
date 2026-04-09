@@ -33,6 +33,8 @@ def get_operation(message):
         bot.send_message(message.chat.id, 'Завозной')
     elif op == 'ян':
         bot.send_message(message.chat.id, 'васап хоуми')
+    elif op == 'леша':
+        bot.send_message(message.chat.id, 'насяйника индивидуал сис') 
     elif op in ('таня', 'татьяна'):
         bot.send_message(message.chat.id, 'Так это же любимая жиночка')
     elif op == 'артем':
