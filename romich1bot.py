@@ -7,11 +7,12 @@ known_users = set()
 active_chats = set()  
 pinned_messages = {}
 last_rates_update = {}
+global chat_id
 RATES_INTERVAL = 1 * 10  # обновлять курс 
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
-    
+    chat_id = message.chat.id
     usd_rub, eth_usd = get_rates()
     text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'    
     
@@ -94,6 +95,7 @@ def rates_sender():
     while True:
         usd_rub, eth_usd = get_rates()
         bot.send_message(chat_id, 'поток')
+    
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         for chat_id in list(active_chats):  # копия списка для безопасности
             try:
