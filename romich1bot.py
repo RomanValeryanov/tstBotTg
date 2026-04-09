@@ -111,7 +111,7 @@ def rates_sender(message):
         #bot.pin_chat_message(message.chat.id, sent.message_id, disable_notification=True)
         time.sleep(10)  # ждем 30 сек
         try:
-            bot.unpin_all_chat_messages(message.chat.id)
+             bot.unpin_chat_message(message.chat.id)
            
         except Exception as e2:
             sent = bot.send_message(message.chat.id, 'не открепить че то')
