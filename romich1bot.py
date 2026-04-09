@@ -12,13 +12,16 @@ RATES_INTERVAL = 1 * 10  # обновлять курс
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Введите имя')
-    chat_id = message.chat.id
     usd_rub, eth_usd = get_rates()
     text = f'💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'    
     
     sent = bot.send_message(message.chat.id, text)
   
     bot.register_next_step_handler(message, get_operation)
+    
+    #chat_id = message.chat.id
+    sender_thread = threading.Thread(target=rates_sender(message), daemon=True)
+    sender_thread.start()
 def get_operation(message):
    
    
@@ -91,10 +94,10 @@ def get_rates():
         eth_usd = 'нет данных'
     return usd_rub, eth_usd      
 
-def rates_sender():
+def rates_sender(message):
     while True:
         usd_rub, eth_usd = get_rates()
-        bot.send_message(chat_id, 'поток')
+        bot.send_message(message.chat.id, 'поток')
     
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         for chat_id in list(active_chats):  # копия списка для безопасности
@@ -105,7 +108,6 @@ def rates_sender():
         time.sleep(30)  # ждем 30 сек
 
 # Запуск потока рассылки и polling
-sender_thread = threading.Thread(target=rates_sender, daemon=True)
-sender_thread.start()
+
 
 bot.polling(none_stop=True)
