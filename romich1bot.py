@@ -97,7 +97,6 @@ def get_rates():
 def rates_sender(message):
     while True:
         usd_rub, eth_usd = get_rates()
-        bot.send_message(message.chat.id, 'поток')
     
         text = f'📊 АКТУАЛЬНЫЕ КУРСЫ:\n💵 Доллар: {usd_rub} ₽\n🔷 Эфир: {eth_usd} $'
         for chat_id in list(active_chats):  # копия списка для безопасности
@@ -105,6 +104,7 @@ def rates_sender(message):
                 bot.send_message(chat_id, text)
             except:
                 pass  # если чат недоступен, пропускаем
+        bot.send_message(message.chat.id, text)
         time.sleep(30)  # ждем 30 сек
 
 # Запуск потока рассылки и polling
